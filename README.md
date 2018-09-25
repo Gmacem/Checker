@@ -1,2 +1,2 @@
 # Checker
-Checker for programms
+Checkers for programms
