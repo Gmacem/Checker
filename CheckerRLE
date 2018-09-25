@@ -1,0 +1,28 @@
+#!/bin/bash
+
+for filename in ./tests/*.txt 
+do
+
+p1="./code.txt"
+p2="./decode.txt"
+parm1="code"
+parm2="decode"
+
+echo $filename
+
+eval "node rle.js $parm1 $filename $p1"
+eval "node rle.js $parm2 $p1 $p2"
+
+if cmp -s "$filename" "$p2"
+then
+	echo "$filename : OK"
+else
+	echo "$filename : WA"
+	eval "cat $filename >> log.txt" 
+	eval "cat $p1 >> log.txt"
+	eval "cat $p2 >> log.txt"
+fi
+done
+
+rm $p1
+rm $p2
