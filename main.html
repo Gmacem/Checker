@@ -1,0 +1,100 @@
+<meta charset="utf-8"/>
+
+<html>
+    <head>
+        <script>
+            var bitInSymb = 8;
+                        
+            String.prototype.replaceAt=function(index, replacement) {
+                return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
+            }
+
+            function reverse(s){
+                return s.split("").reverse().join("");
+            }
+                
+            function CalcControl(str){
+                let res = new Array();
+                for (let i = 0; (1 << i) < str.length; ++i){
+                    let xor = 0;
+                    for (let j = (1 << i) + 1; j < str.length; ++j)
+                        if (Math.floor(j / (1 << i)) % 2 == 1)
+                            xor = (xor + str[j]) % 2;
+                    res.push(xor);
+                }
+                return res;
+            }
+
+            function DecimalToBinary(num){
+                res = '';
+                for (let i = 0; i < bitInSymb; ++i){
+                    res += num % 2;
+                    num = Math.floor(num/2);
+                }
+                return reverse(res);
+            }
+            
+            function GetCntControl(n){
+                let res = 0;
+                console.log(n);
+                while ((1 << res) < n)
+                    res++;
+                return res + 1;
+            }
+
+            function hemCode(){
+                var iStr = document.getElementById("inputString").value;
+                let binaryStr = "";
+                for (let i = 0; i < iStr.length; ++i)
+                    binaryStr += DecimalToBinary(iStr[i].charCodeAt(0));
+                let cntControl = GetCntControl(binaryStr.length);
+                let pos = 0;
+                let codeArray = new Array(cntControl + binaryStr.length + 1);
+                for (let i = 0; i < cntControl; ++i){
+                    codeArray[1 << i] = 0;
+                    for (let j = 0; j < (1 << i) - 1 && pos < binaryStr.length; ++j)
+                        codeArray[(1 << i) + j + 1] = binaryStr[pos++] - '0';
+                }
+                let valControl = new CalcControl(codeArray);
+                console.log(valControl);
+                for (let i = 0; i < cntControl; ++i)
+                    codeArray[1 << i] = valControl[i];
+
+                document.getElementById("codeString").value = codeArray.join('');
+            }  
+            function hemDecode(){
+                var cStr =  document.getElementById("codeString").value; 
+                let codeArray = cStr.split('').map(Number);
+                codeArray.unshift('');
+                let valControl = new CalcControl(codeArray);
+                let sum = 0;
+                for (let i = 0; (1 << i) < codeArray.length; ++i){
+                    console.log(i);
+                    if (valControl[i] != codeArray[(1 << i)]){
+                        sum += (1 << i);
+                        console.log(i);
+                        console.log(valControl[i]);
+                        console.log(codeArray[(1 << i)]);
+                    }
+                }
+                if (sum > 0)
+                    codeArray[sum] ^= 1;
+                console.log(sum);
+                document.getElementById("decodeString").value = codeArray.join('');
+            }
+        </script>
+        <title>Hemming code</title>
+    </head>
+    <body>
+        <h1>Polygon for testing</h1>
+        <input type="text" id="inputString"> Input string
+        <br>
+        <input type="button" value="Encode" onClick="hemCode()">
+        <br><br>
+        <input type="text" id="codeString"> Code String
+        <br>
+        <input type="button" value="Decode" onClick="hemDecode()">
+        <br><br>
+        <input type="text" id="decodeString"> Decode String
+    </body>
+</html>
